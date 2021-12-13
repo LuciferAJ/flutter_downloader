@@ -395,18 +395,26 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                         String savedPath = getMediaStoreEntryPathApi29(uriApi29);
                         log("File downloaded (" + savedPath + ")");
                         if (savedPath != null) {
-                            scanFilePath(savedPath, contentType);
-                            //  -> {
-                            //     log("MediaStore updated (" + uriResponse + ")");
-                            // });
+                            scanFilePath(savedPath, contentType, 
+
+                            new _ON_CALLBACK_LISTENER ()
+                            {
+                                @Override
+                                void _ON_CALLBACK (_FIELD_TYPE uriResponse){
+                                    log("MediaStore updated (" + uriResponse + ")");
+                            }});
+
                         }
                         fileSavedPath = savedPath;
                     } else {
                         if (fileApi21 != null) {
                             log("File downloaded (" + fileApi21.getPath() + ")");
-                            
-                            scanFilePath(fileApi21.getPath(), contentType);
-
+                            scanFilePath(fileApi21.getPath(), contentType,   new _ON_CALLBACK_LISTENER ()
+                            {
+                                @Override
+                                void _ON_CALLBACK (_FIELD_TYPE uriResponse){
+                                    log("MediaStore updated (" + uriResponse + ")");
+                            }});
                             fileSavedPath = fileApi21.getPath();
                         }
                     }
@@ -518,11 +526,16 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         }
     }
 
-    void scanFilePath(String path, String mimeType) {
+    void scanFilePath(String path, String mimeType, CallbackUri callback) {
         MediaScannerConnection.scanFile(
             getApplicationContext(),
             new String[]{path},
-            new String[]{mimeType},null);
+            new String[]{mimeType},
+            new _ON_CALLBACK_LISTENER ()
+            {
+                @Override
+                void _ON_CALLBACK (_FIELD_TYPE path1, _FIELD_TYPE uri){ callback.invoke(uri);
+            }});
     }
 
     private void cleanUp() {
