@@ -395,16 +395,13 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                         String savedPath = getMediaStoreEntryPathApi29(uriApi29);
                         log("File downloaded (" + savedPath + ")");
                         if (savedPath != null) {
-                            scanFilePath(savedPath, contentType, uriResponse -> {
-                                log("MediaStore updated (" + uriResponse + ")");
-                            });
+                            scanFilePath(savedPath, contentType);
                         }
                         fileSavedPath = savedPath;
                     } else {
                         if (fileApi21 != null) {
                             log("File downloaded (" + fileApi21.getPath() + ")");
-                            scanFilePath(fileApi21.getPath(), contentType, uriResponse -> {
-                                log("MediaStore updated (" + uriResponse + ")");
+                            scanFilePath(fileApi21.getPath(), contentType);
                             });
                             fileSavedPath = fileApi21.getPath();
                         }
@@ -517,13 +514,17 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         }
     }
 
-    void scanFilePath(String path, String mimeType, CallbackUri callback) {
+    void scanFilePath(String path, String mimeType) {
         MediaScannerConnection.scanFile(
             getApplicationContext(),
             new String[]{path},
             new String[]{mimeType},
-            (path1, uri) -> callback.invoke(uri));
-    }
+            new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                    // callback.invoke(uri);
+                    log("updated (" + uri + ")");
+                }});    
+            }
 
     private void cleanUp() {
         DownloadTask task = taskDao.loadTask(getId().toString());
