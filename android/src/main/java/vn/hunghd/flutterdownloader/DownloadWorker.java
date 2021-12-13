@@ -395,26 +395,17 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                         String savedPath = getMediaStoreEntryPathApi29(uriApi29);
                         log("File downloaded (" + savedPath + ")");
                         if (savedPath != null) {
-                            scanFilePath(savedPath, contentType, 
-
-                            new CallbackUri ()
-                            {
-                                @Override
-                                void _ON_CALLBACK (String uriResponse){
-                                    log("MediaStore updated (" + uriResponse + ")");
-                            }});
-
+                            scanFilePath(savedPath, contentType, uriResponse -> {
+                                log("MediaStore updated (" + uriResponse + ")");
+                            });
                         }
                         fileSavedPath = savedPath;
                     } else {
                         if (fileApi21 != null) {
                             log("File downloaded (" + fileApi21.getPath() + ")");
-                            scanFilePath(fileApi21.getPath(), contentType,   new CallbackUri ()
-                            {
-                                @Override
-                                void _ON_CALLBACK (String uriResponse){
-                                    log("MediaStore updated (" + uriResponse + ")");
-                            }});
+                            scanFilePath(fileApi21.getPath(), contentType, uriResponse -> {
+                                log("MediaStore updated (" + uriResponse + ")");
+                            });
                             fileSavedPath = fileApi21.getPath();
                         }
                     }
@@ -531,11 +522,7 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
             getApplicationContext(),
             new String[]{path},
             new String[]{mimeType},
-            new MediaScannerConnection.OnScanCompletedListener() {
-               
-                public void onScanCompleted(String path, Uri uri) {
-                    callback.invoke(uri);
-                }});
+            (path1, uri) -> callback.invoke(uri));
     }
 
     private void cleanUp() {
