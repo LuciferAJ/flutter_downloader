@@ -404,7 +404,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                     } else {
                         if (fileApi21 != null) {
                             log("File downloaded (" + fileApi21.getPath() + ")");
-                                                        scanFilePath(savedPath, contentType);
+                            
+                            scanFilePath(fileApi21.getPath(), contentType);
 
                             fileSavedPath = fileApi21.getPath();
                         }
