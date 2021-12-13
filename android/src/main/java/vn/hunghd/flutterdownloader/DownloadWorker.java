@@ -397,10 +397,10 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                         if (savedPath != null) {
                             scanFilePath(savedPath, contentType, 
 
-                            new _ON_CALLBACK_LISTENER ()
+                            new CallbackUri ()
                             {
                                 @Override
-                                void _ON_CALLBACK (_FIELD_TYPE uriResponse){
+                                void _ON_CALLBACK (String uriResponse){
                                     log("MediaStore updated (" + uriResponse + ")");
                             }});
 
@@ -409,10 +409,10 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                     } else {
                         if (fileApi21 != null) {
                             log("File downloaded (" + fileApi21.getPath() + ")");
-                            scanFilePath(fileApi21.getPath(), contentType,   new _ON_CALLBACK_LISTENER ()
+                            scanFilePath(fileApi21.getPath(), contentType,   new CallbackUri ()
                             {
                                 @Override
-                                void _ON_CALLBACK (_FIELD_TYPE uriResponse){
+                                void _ON_CALLBACK (String uriResponse){
                                     log("MediaStore updated (" + uriResponse + ")");
                             }});
                             fileSavedPath = fileApi21.getPath();
@@ -531,11 +531,11 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
             getApplicationContext(),
             new String[]{path},
             new String[]{mimeType},
-            new _ON_CALLBACK_LISTENER ()
-            {
-                @Override
-                void _ON_CALLBACK (_FIELD_TYPE path1, _FIELD_TYPE uri){ callback.invoke(uri);
-            }});
+            new MediaScannerConnection.OnScanCompletedListener() {
+               
+                public void onScanCompleted(String path, Uri uri) {
+                    callback.invoke(uri);
+                }});
     }
 
     private void cleanUp() {
